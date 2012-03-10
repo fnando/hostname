@@ -35,9 +35,16 @@ App = Rack::Builder.app do
     run proc {|env|
       request = Rack::Request.new(env)
       ip_address = request.params["ip"]
+
+      begin
+        result = ip_address ? Resolv.new.getname(ip_address) : nil
+      rescue Exception => error
+        result = "Error: #{error.class} => #{error.message}"
+      end
+
       attrs = {
         :ip => ip_address.to_s.gsub(/</, "&lt;"),
-        :result => ip_address ? Resolv.new.getname(ip_address) : nil
+        :result => result
       }
       content = TEMPLATE % attrs
       [200, {"Content-Type" => "text/html"}, [content]]
