@@ -17,7 +17,7 @@ TEMPLATE = <<-HTML
       <p>
         <label>
           IP Address:
-          <input type="text" value="%{ip}" name="ip">
+          <input type="text" value="%{ip}" name="ip" autofocus required>
           <input type="submit" value="Resolve">
         </label>
       </p>
