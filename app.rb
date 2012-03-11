@@ -41,7 +41,7 @@ App = Rack::Builder.app do
       begin
         result = ip_address ? Resolv.new.getname(ip_address) : nil
       rescue Exception => error
-        result = "Error: #{error.class} => #{error.message}"
+        result = "Error: #{error.message}"
       end
 
       attrs = {
