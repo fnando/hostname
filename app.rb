@@ -1,3 +1,4 @@
+require "json"
 require "resolv"
 
 require "bundler"
@@ -35,19 +36,29 @@ App = Rack::Builder.app do
     run proc {|env|
       request = Rack::Request.new(env)
       ip_address = request.params["ip"]
+      format = request.params["format"]
 
       begin
         result = ip_address ? Resolv.new.getname(ip_address) : nil
       rescue Exception => error
-        result = "Error: #{error.class} => #{error.message}"
+        result = "Error: #{error.message}"
       end
 
       attrs = {
         :ip => ip_address.to_s.gsub(/</, "&lt;"),
         :result => result
       }
-      content = TEMPLATE % attrs
-      [200, {"Content-Type" => "text/html"}, [content]]
+      
+      case format
+      when 'json'
+        content = attrs.to_json
+        headers = {"Content-Type" => "application/json"}
+      else
+        content = TEMPLATE % attrs
+        headers = {"Content-Type" => "text/html"}
+      end
+      
+      [200, headers, [content]]
     }
   end
 end
